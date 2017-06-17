@@ -1,0 +1,20 @@
+#!/bin/zsh
+# I/O Schedulers for the mirror'ed md0 devices
+RETVAL=0
+cat <<-EOF							|
+	sda	cfq
+	sdc	cfq
+	sdd	cfq
+	sdi	cfq
+EOF
+while read d s; do
+	p="/sys/block/${d}/queue/scheduler"
+	printf "%15s --> %s: " "${s}" "${p}"
+	if /bin/echo "${s}" >/sys/block/${d}/queue/scheduler 2>/dev/null; then
+		echo OK
+	else
+		echo FAILED
+		RETVAL=1
+	fi
+done
+exit ${RETVAL}
